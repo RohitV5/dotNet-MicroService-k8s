@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PlatformService.Data;
 using PlatformService.Dtos;
+using PlatformService.Models;
 
 namespace PlatformService.Controllers
 {
@@ -33,12 +34,12 @@ namespace PlatformService.Controllers
 
         }
 
-        [HttpGet("{id}", Name="GetPlatformById")]
-        public ActionResult<PlatformReadDto> GetPlatform(int id)
+        [HttpGet("{id}", Name = "GetPlatformById")]
+        public ActionResult<PlatformReadDto> GetPlatformById(int id)
         {
             var platformItem = _repository.GetPlatformById(id);
 
-            if(platformItem != null)
+            if (platformItem != null)
             {
                 return Ok(_mapper.Map<PlatformReadDto>(platformItem));
             }
@@ -46,6 +47,23 @@ namespace PlatformService.Controllers
             return NotFound();
         }
 
-        
+        [HttpPost]
+        public ActionResult<PlatformReadDto> CreatePlatform(PlatformCreateDto platformCreateDto)
+        {
+            var platformModel = _mapper.Map<Platform>(platformCreateDto);
+
+            //On create platform the id will be autoincremented and assigned to platformModel object.
+            _repository.CreatePlatform(platformModel);
+
+            
+            _repository.SaveChanges();
+
+            var platformReadDto = _mapper.Map<PlatformReadDto>(platformModel);
+
+            //CreatedAtRoute will send a header with Location as https://localhost:7068/api/Platforms/5
+            return CreatedAtRoute(nameof(GetPlatformById), new { Id = platformReadDto.Id }, platformReadDto);
+        }
+
+
     }
 }
