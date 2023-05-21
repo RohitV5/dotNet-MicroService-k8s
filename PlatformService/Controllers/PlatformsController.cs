@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using PlatformService.Data;
 using PlatformService.Dtos;
 using PlatformService.Models;
+using PlatformService.SyncDataServices.Http;
 
 namespace PlatformService.Controllers
 {
@@ -17,8 +18,10 @@ namespace PlatformService.Controllers
     {
         public IPlatformRepo _repository { get; }
         private readonly IMapper _mapper;
-        public PlatformsController(IPlatformRepo repository, IMapper mapper)
+        private readonly ICommandDataClient _commandDataClient;
+        public PlatformsController(IPlatformRepo repository, IMapper mapper, ICommandDataClient commandDataClient)
         {
+            _commandDataClient = commandDataClient;
             _mapper = mapper;
             _repository = repository;
 
@@ -48,18 +51,28 @@ namespace PlatformService.Controllers
         }
 
         [HttpPost]
-        public ActionResult<PlatformReadDto> CreatePlatform(PlatformCreateDto platformCreateDto)
+        public async Task<ActionResult<PlatformReadDto>> CreatePlatform(PlatformCreateDto platformCreateDto)
         {
             var platformModel = _mapper.Map<Platform>(platformCreateDto);
 
             //On create platform the id will be autoincremented and assigned to platformModel object.
             _repository.CreatePlatform(platformModel);
 
-            
+
             _repository.SaveChanges();
 
             var platformReadDto = _mapper.Map<PlatformReadDto>(platformModel);
 
+
+            try
+            {
+                await _commandDataClient.SendPlatformToCommand(platformReadDto);
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Could not send synchronously {ex.Message}");
+            }
             //CreatedAtRoute will send a header with Location as https://localhost:7068/api/Platforms/5
             return CreatedAtRoute(nameof(GetPlatformById), new { Id = platformReadDto.Id }, platformReadDto);
         }
