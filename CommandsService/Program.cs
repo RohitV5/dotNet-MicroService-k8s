@@ -17,7 +17,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// This is causing issue inside kubernetest
+// app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

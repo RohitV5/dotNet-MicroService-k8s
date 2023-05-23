@@ -21,7 +21,11 @@ namespace PlatformService.SyncDataServices.Http
                 "application/json"
             );
 
-            var response = await _httpClient.PostAsync($"{_configuration["CommandService"]}api/c/platforms", httpContent);
+            var endpoint = _configuration["CommandService"];
+
+            Console.WriteLine($"Sending request to {endpoint}");
+
+            var response = await _httpClient.PostAsync($"{endpoint}api/c/platforms", httpContent);
 
             if (response.IsSuccessStatusCode)
             {

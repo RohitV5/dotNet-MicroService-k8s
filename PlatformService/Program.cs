@@ -26,7 +26,8 @@ if (app.Environment.IsDevelopment())
     PrepDb.PrepPopulation(app);
 }
 
-app.UseHttpsRedirection();
+// This is causing issue inside kubernetest
+// app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
