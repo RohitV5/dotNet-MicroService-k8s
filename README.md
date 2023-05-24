@@ -1,4 +1,4 @@
-Seek 2:38 -> 4:18 -> 4:52 (load balancer routing)
+Seek 2:38 -> 4:18 -> 4:52 (load balancer routing) -> 5:32 (Creating MS SQL Container)
 
 Docker commands
 
@@ -39,3 +39,22 @@ kubectl get pods --namespace=ingress-nginx
 
 To check the load balancer and its ip address and ports
 kubectl get services --namespace=ingress-nginx 
+
+
+Secret variable for sql username password inside kubernetes
+kubectl create secret generic mssql --from-literal=SA_PASSWORD="P@ssw0rd"
+
+
+In case of ImagePullBackOff error during running kubernetes mssql just pull the image manuallly
+docker pull mcr.microsoft.com/mssql/server:2017-latest
+and then deleting and re-applying the deployment.
+
+Check all services are running fine by
+kubectl get pods
+
+Install MS SQL Server Management Studio Approx 700MB
+username is localhost,1433
+password: P@ssw0rd
+
+make sure to put username as localhost,1433   I know its wierd
+
