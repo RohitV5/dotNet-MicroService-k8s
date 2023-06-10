@@ -58,3 +58,6 @@ password: P@ssw0rd
 
 make sure to put username as localhost,1433   I know its wierd
 
+
+App setting jsons should be added to gitignore but we are adding for the sake of learning.
+
