@@ -1,11 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using PlatformService.Data;
+using PlatformService.Extensions;
 using PlatformService.SyncDataServices.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<AppDbContext>(opt => opt.UseInMemoryDatabase("InMem"));
+builder.Services.AddDatabaseService(builder.Configuration, builder.Environment);
 builder.Services.AddScoped<IPlatformRepo, PlatformRepo>();
 builder.Services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -21,10 +22,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-
-    //Seeding DB
-    PrepDb.PrepPopulation(app);
 }
+
+//Seeding DB
+PrepDb.PrepPopulation(app, app.Environment.IsProduction());
 
 // This is causing issue inside kubernetest
 // app.UseHttpsRedirection();
