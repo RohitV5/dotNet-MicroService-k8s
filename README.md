@@ -1,4 +1,4 @@
-Seek 2:38 -> 4:18 -> 4:52 (load balancer routing) -> 5:32 (Creating MS SQL Container)
+Seek 2:38 -> 4:18 -> 4:52 (load balancer routing) -> 5:32 (Creating MS SQL Container) -> 6:28 Using sql server and migrations
 
 Docker commands
 
