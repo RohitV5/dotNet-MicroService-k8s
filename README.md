@@ -1,4 +1,4 @@
-Seek 2:38 -> 4:18 -> 4:52 (load balancer routing) -> 5:32 (Creating MS SQL Container) -> 6:28 Using sql server and migrations -> 6:52 -> 7:20
+Seek 2:38 -> 4:18 -> 4:52 (load balancer routing) -> 5:32 (Creating MS SQL Container) -> 6:28 Using sql server and migrations -> 6:52 -> 8:23 Message Bus Publisher
 
 Docker commands
 
