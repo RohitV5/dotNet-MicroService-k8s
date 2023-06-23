@@ -37,6 +37,7 @@ namespace CommandsService.Controllers
         public ActionResult Test()
         {
             Console.WriteLine("-----> Inbound POST # Command Service");
+            
 
             return Ok("Inbound test of from Platforms Controller");
         }

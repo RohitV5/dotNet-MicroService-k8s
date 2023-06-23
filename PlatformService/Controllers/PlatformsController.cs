@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using PlatformService.AsyncDataServices;
 using PlatformService.Data;
 using PlatformService.Dtos;
 using PlatformService.Models;
@@ -19,11 +16,19 @@ namespace PlatformService.Controllers
         public IPlatformRepo _repository { get; }
         private readonly IMapper _mapper;
         private readonly ICommandDataClient _commandDataClient;
-        public PlatformsController(IPlatformRepo repository, IMapper mapper, ICommandDataClient commandDataClient)
+
+        private readonly IMessageBusClient _messageBusClient;
+
+        public PlatformsController( IPlatformRepo repository, 
+                                    IMapper mapper, 
+                                    ICommandDataClient commandDataClient, 
+                                    IMessageBusClient messageBusClient
+                                )
         {
             _commandDataClient = commandDataClient;
             _mapper = mapper;
             _repository = repository;
+            _messageBusClient = messageBusClient;
 
         }
 
@@ -61,9 +66,11 @@ namespace PlatformService.Controllers
 
             _repository.SaveChanges();
 
+            Console.WriteLine($"Saved platform========== {platformModel.Id}");
+
             var platformReadDto = _mapper.Map<PlatformReadDto>(platformModel);
 
-
+            //Send Sync Message
             try
             {
                 await _commandDataClient.SendPlatformToCommand(platformReadDto);
@@ -73,6 +80,19 @@ namespace PlatformService.Controllers
             {
                 Console.WriteLine($"Could not send synchronously {ex.Message}");
             }
+
+            //Send Async Message
+            try
+            {
+                var platformPublishedDto = _mapper.Map<PlatformPublishedDto>(platformReadDto);
+                platformPublishedDto.Event = "Platform Published";
+                _messageBusClient.PublishNewPlatform(platformPublishedDto);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"--> Could not send asynchronously: {ex.Message}");
+            }
+
             //CreatedAtRoute will send a header with Location as https://localhost:7068/api/Platforms/5
             return CreatedAtRoute(nameof(GetPlatformById), new { Id = platformReadDto.Id }, platformReadDto);
         }
