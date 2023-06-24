@@ -27,14 +27,14 @@ namespace CommandsService.EventProcessing
             switch(eventType)
             {
                 case EventType.PlatformPublished:
-                    // TODO
+                    addPlatform(message);
                     break;
                 default:
                     break;
             }
         }
 
-        //To understand what event we got
+        //Gets the message in string format from rabbitmq
         private EventType DetermineEvent(string notificationMessage)
         {
             Console.WriteLine("--> Determine Event");
@@ -67,6 +67,7 @@ namespace CommandsService.EventProcessing
                     {
                         repo.CreatePlatform(plat);
                         repo.SaveChanges();
+                        Console.WriteLine("--> Platform added!");
                     }
                     else
                     {
